@@ -1,90 +1,104 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
-namespace Monogame_click_spel;
-
-public class Game1 : Game
+namespace Monogame_click_spel
 {
-    private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
-    Enemy enemy;
-    Enemy enemy1;
-    Enemy enemy2;
-    Enemy enemy3;
-    Enemy enemy4;
-
-    public Game1()
+    public class Game1 : Game
     {
-        _graphics = new GraphicsDeviceManager(this);
-        Content.RootDirectory = "Content";
-        IsMouseVisible = true;
-    }
+        private GraphicsDeviceManager _graphics;
+        private SpriteBatch _spriteBatch;
+        private Texture2D pixel;
+        private List<Enemy> enemies;
+        static private Random random = new Random();
+        //private int randomLimitH = random.Next(50, windowHeight - 50);
+        //private int randomLimitW = random.Next(50, windowWidth - 50);
+        static public int windowHeight = 900;
+        static public int windowWidth = 1500;
 
-    protected override void Initialize()
-    {
-        // TODO: Add your initialization logic here
+        public Game1()
+        {
+            _graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
+            IsMouseVisible = true;
+        }
 
-        _graphics.IsFullScreen = false;
-        _graphics.PreferredBackBufferWidth = 1700;
-        _graphics.PreferredBackBufferHeight = 800;
-        _graphics.ApplyChanges();
+        protected override void Initialize()
+        {
+            _graphics.IsFullScreen = false;
+            _graphics.PreferredBackBufferWidth = windowWidth;
+            _graphics.PreferredBackBufferHeight = windowHeight;
+            _graphics.ApplyChanges();
 
-        base.Initialize();
-    }
+            base.Initialize();
+        }
 
-    protected override void LoadContent()
-    {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
-        enemy.texture = new Texture2D(GraphicsDevice,1,1);
-        enemy.texture.SetData(new Color[]{Color.Red});
-        enemy1.texture = new Texture2D(GraphicsDevice,1,1);
-        enemy1.texture.SetData(new Color[]{Color.Green});
-        enemy2.texture = new Texture2D(GraphicsDevice,1,1);
-        enemy2.texture.SetData(new Color[]{Color.Yellow});
-        enemy3.texture = new Texture2D(GraphicsDevice,1,1);
-        enemy3.texture.SetData(new Color[]{Color.Purple});
-        enemy4.texture = new Texture2D(GraphicsDevice,1,1);
-        enemy4.texture.SetData(new Color[]{Color.Black});
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            pixel = new Texture2D(GraphicsDevice, 1, 1);
+            pixel.SetData(new Color[] { Color.Red });
 
-        enemy = new Enemy(800, 350, enemy.texture);
-        enemy1 = new Enemy(210, 400, enemy1.texture);
-        enemy2 = new Enemy(500, 250, enemy2.texture);
-        enemy3 = new Enemy(1500, 650, enemy3.texture);
-        enemy4 = new Enemy(1300, 375, enemy4.texture);
-        
-        // TODO: use this.Content to load your game content here
-    }
+            enemies = new List<Enemy>
+            {
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
+                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel)
+            };
 
-    protected override void Update(GameTime gameTime)
-    {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
+        }
 
 
-        //MouseState mouse = Mouse.GetState();
+        protected override void Update(GameTime gameTime)
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
 
-        
-        
+            MouseState mouseState = Mouse.GetState();
+            Point mousePosition = mouseState.Position;
 
-        base.Update(gameTime);
-    }
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                // Check if any enemy is clicked
+                for (int i = enemies.Count - 1; i >= 0; i--)
+                {
+                    if (enemies[i].IsClicked(mousePosition))
+                    {
+                        // Remove the clicked enemy
+                        enemies.RemoveAt(i);
+                        enemies.Add(new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel));
+                    }
+                }
+            }
 
-    protected override void Draw(GameTime gameTime)
-    {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
+            base.Update(gameTime);
+        }
 
-        // TODO: Add your drawing code here
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        _spriteBatch.Begin();
-        enemy.Draw(_spriteBatch);
-        enemy1.Draw(_spriteBatch);
-        enemy2.Draw(_spriteBatch);
-        enemy3.Draw(_spriteBatch);
-        enemy4.Draw(_spriteBatch);
+            _spriteBatch.Begin();
+            foreach (var enemy in enemies)
+            {
+                enemy.Draw(_spriteBatch);
+            }
+            _spriteBatch.End();
 
-        _spriteBatch.End();
-
-        base.Draw(gameTime);
+            base.Draw(gameTime);
+        }
     }
 }
