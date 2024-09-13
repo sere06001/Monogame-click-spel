@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Monogame-click-spel")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6cdc47a1cdf6249c37c0bc3089a43925f07caad4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+654eb6acfcfb1d55bd49e5c4f0cd218191e749e5")]
 [assembly: System.Reflection.AssemblyProductAttribute("Monogame-click-spel")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Monogame-click-spel")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
