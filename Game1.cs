@@ -13,6 +13,7 @@ namespace Monogame_click_spel
         private SpriteBatch _spriteBatch;
         private Texture2D pixel;
         private List<Enemy> enemies;
+        private int enemyAmount = 10;
         static private Random random = new Random();
         //private int randomLimitH = random.Next(50, windowHeight - 50);
         //private int randomLimitW = random.Next(50, windowWidth - 50);
@@ -37,30 +38,56 @@ namespace Monogame_click_spel
         }
 
         protected override void LoadContent()
+{
+    _spriteBatch = new SpriteBatch(GraphicsDevice);
+    pixel = new Texture2D(GraphicsDevice, 1, 1);
+    pixel.SetData(new Color[] { Color.Red });
+
+    enemies = new List<Enemy>();
+
+    // Add enemies with non-overlapping positions
+    for (int i = 0; i < enemyAmount; i++)
+    {
+        AddEnemy();
+    }
+}
+
+        // Method to add an enemy with a non-overlapping position
+private void AddEnemy()
+{
+    Enemy newEnemy;
+    bool positionValid;
+
+    do
+    {
+        // Create a new enemy with a random position
+        newEnemy = new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel);
+        positionValid = true;
+
+        // Check if the new enemy is too close to any existing enemies
+        foreach (var enemy in enemies)
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            pixel = new Texture2D(GraphicsDevice, 1, 1);
-            pixel.SetData(new Color[] { Color.Red });
-
-            enemies = new List<Enemy>
+            if (IsTooClose(newEnemy.Position, enemy.Position, 200))
             {
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel),
-                new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel)
-            };
-
+                positionValid = false;
+                break;
+            }
         }
 
+    } while (!positionValid); // Repeat until a valid position is found
+
+    // Add the valid enemy
+    enemies.Add(newEnemy);
+}
+
+
+// Method to check if two positions are too close
+private bool IsTooClose(Vector2 pos1, Vector2 pos2, float maxDist)
+{
+    float dx = pos1.X - pos2.X;
+    float dy = pos1.Y - pos2.Y;
+    return (Math.Abs(dx) < maxDist && Math.Abs(dy) < maxDist);
+}
 
         protected override void Update(GameTime gameTime)
         {
@@ -79,7 +106,7 @@ namespace Monogame_click_spel
                     {
                         // Remove the clicked enemy
                         enemies.RemoveAt(i);
-                        enemies.Add(new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel));
+                        AddEnemy();
                     }
                 }
             }
