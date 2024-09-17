@@ -38,56 +38,49 @@ namespace Monogame_click_spel
         }
 
         protected override void LoadContent()
-{
-    _spriteBatch = new SpriteBatch(GraphicsDevice);
-    pixel = new Texture2D(GraphicsDevice, 1, 1);
-    pixel.SetData(new Color[] { Color.Red });
-
-    enemies = new List<Enemy>();
-
-    // Add enemies with non-overlapping positions
-    for (int i = 0; i < enemyAmount; i++)
-    {
-        AddEnemy();
-    }
-}
-
-        // Method to add an enemy with a non-overlapping position
-private void AddEnemy()
-{
-    Enemy newEnemy;
-    bool positionValid;
-
-    do
-    {
-        // Create a new enemy with a random position
-        newEnemy = new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel);
-        positionValid = true;
-
-        // Check if the new enemy is too close to any existing enemies
-        foreach (var enemy in enemies)
         {
-            if (IsTooClose(newEnemy.Position, enemy.Position, 200))
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            pixel = new Texture2D(GraphicsDevice, 1, 1);
+            pixel.SetData(new Color[] { Color.Red });
+
+            enemies = new List<Enemy>();
+
+            for (int i = 0; i < enemyAmount; i++)
             {
-                positionValid = false;
-                break;
-            }
+            AddEnemy();
+        }
         }
 
-    } while (!positionValid); // Repeat until a valid position is found
+        private void AddEnemy()
+        {
+            Enemy newEnemy;
+            bool positionValid;
 
-    // Add the valid enemy
-    enemies.Add(newEnemy);
-}
+            do
+            {
+                newEnemy = new Enemy(random.Next(50, windowWidth - 50), random.Next(50, windowHeight - 50), pixel);
+                positionValid = true;
 
+                foreach (var enemy in enemies)
+                {
+                   if (IsTooClose(newEnemy.Position, enemy.Position, 200))
+                   {
+                        positionValid = false;
+                        break;
+                    }
+                }
 
-// Method to check if two positions are too close
-private bool IsTooClose(Vector2 pos1, Vector2 pos2, float maxDist)
-{
-    float dx = pos1.X - pos2.X;
-    float dy = pos1.Y - pos2.Y;
-    return (Math.Abs(dx) < maxDist && Math.Abs(dy) < maxDist);
-}
+            } while (!positionValid);
+
+            enemies.Add(newEnemy);
+        }
+
+        private bool IsTooClose(Vector2 pos1, Vector2 pos2, float maxDist)
+        {
+            float dx = pos1.X - pos2.X;
+            float dy = pos1.Y - pos2.Y;
+            return (Math.Abs(dx) < maxDist && Math.Abs(dy) < maxDist);
+        }
 
         protected override void Update(GameTime gameTime)
         {
@@ -99,14 +92,12 @@ private bool IsTooClose(Vector2 pos1, Vector2 pos2, float maxDist)
 
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                // Check if any enemy is clicked
                 for (int i = enemies.Count - 1; i >= 0; i--)
                 {
                     if (enemies[i].IsClicked(mousePosition))
                     {
-                        // Remove the clicked enemy
                         enemies.RemoveAt(i);
-                        AddEnemy();
+                        //AddEnemy();
                     }
                 }
             }
